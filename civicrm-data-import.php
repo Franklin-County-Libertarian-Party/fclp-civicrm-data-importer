@@ -97,10 +97,16 @@ foreach ($records as $record) {
   add_record($record);
 }
 
+$record = null;
 while($record = transform_record(fgetcsv($filehandle), $headers, $line_counter)) {
-
+	add_record($record);
 }
+
 function transform_record($record, $headers, $line_count) {
+	if( ! $record) {
+		return null;
+	}
+
 	$record_count = count($record);
 	$header_count = count($headers);
 	if($record_count != $header_count) {
@@ -127,7 +133,6 @@ function add_record($record) {
       // Maybe not, though see http://wiki.civicrm.org/confluence/display/CRMDOC/Using+the+API#UsingtheAPI-CustomData
       array_push($voter_history, array('group' => 'Voting History', 'field' => $field, 'value' => $value));
     } elseif($dst_field == 'Voter Metadata') {
-      $contact['custom_'.'Voting History:'.$field] = $value;
       array_push($voter_metadata, array('group' => 'Voter Metadata', 'field' => $field, 'value' => $value));
     } elseif($dst_field == 'base') {
       $contact[$dst_field] = $value;
@@ -135,7 +140,15 @@ function add_record($record) {
     
     $result = null;
     try {
-       $result = civicrm_api3('contact', 'create', $contact);
+		$result = civicrm_api3('contact', 'create', $contact);
+		if($result) {
+		  foreach($voter_history as $fieldval) {
+			_update_custom_field($result['id'], $fieldval['group'], $fieldval['field'], $fieldval['value']);
+		  }
+		  foreach($voter_metadata as $fieldval) {
+			_update_custom_field($result['id'], $fieldval['group'], $fieldval['field'], $fieldval['value']);
+		  }
+		}
     } catch (CiviCRM_API3_Exception $e) {
       // handle error here
       $errorMessage = $e->getMessage();
@@ -144,14 +157,6 @@ function add_record($record) {
       return array('error' => $errorMessage, 'error_code' => $errorCode, 'error_data' => $errorData);
     }
     
-    if($result) {
-      foreach($voter_history as $fieldval) {
-        _update_custom_field($result['id'], $fieldval['group'], $fieldval['field'], $fieldval['value']);
-      }
-      foreach($voter_metadata as $fieldval) {
-        _update_custom_field($result['id'], $fieldval['group'], $fieldval['field'], $fieldval['value']);
-      }
-    }
     
   }
 }
@@ -163,7 +168,8 @@ function _update_custom_field($uid,$group_name,$field_name,$value, $overwritebla
   //Don't overwrite existing data if our data value is empty/blank
   //We consider anything that is just whitespace to be "blank"
   if ( ( !isset($value) || strlen(trim($value))==0 ) && !$overwriteblank) return 0;
-    $results=civicrm_api("CustomValue","create", array (version => '3','sequential' =>'1', 'entity_id' =>$uid, "custom_" .$group_name . ":" . $field_name => $value));
+	$custom_create_params = array (version => '3','sequential' =>'1', 'entity_id' =>$uid, "custom_" .$group_name . ":" . $field_name => $value);
+    $results=civicrm_api("CustomValue","create", $custom_create_params);
     //'location_political_geo_information:state  
     //print_r($results);
   return 1;
