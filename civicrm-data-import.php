@@ -76,11 +76,43 @@ $field_mapping = array(
   'Voter Registration Date' => 'Voter Metadata',
 );
 
+define('FILE_SKIP_EMPTY_LINES', TRUE);
 
+if( ! $argv[1] ) {
+	$usage = "Usage: $ civicrm-data-import filename.csv\nMissing filename\n"
+	exit($usage);
+}
 
+$filehandle = fopen($argv[1], 'r');
+
+if( ! $filehandle) {
+	exit("File [".$argv[1]."] does not exist or can not be opened.");
+}
+
+$headers = fgetcsv($filehandle);
+
+$line_counter = 2;
 foreach ($records as $record) {
   // record will be associative array, field => value
   add_record($record);
+}
+
+while($record = transform_record(fgetcsv($filehandle), $headers, $line_counter)) {
+
+}
+function transform_record($record, $headers, $line_count) {
+	$record_count = count($record);
+	$header_count = count($headers);
+	if($record_count != $header_count) {
+		exit("Wrong number of fields line ".$line_count);
+	}
+	
+	$ret = array();
+	for($i = 0; $i < $record_count; $i++) {
+		$ret[$headers[$i]] = $record[$i];
+	}
+
+	return ret;
 }
 
 function add_record($record) {
