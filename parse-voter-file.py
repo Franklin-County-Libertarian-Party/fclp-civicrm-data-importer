@@ -77,23 +77,3 @@ with open('data.tsv', 'rb') as fin, open('data_out.csv', 'wb') as fout:
 		basic_dict = formatRow(row, fieldnames)        
 		writer.writerow(basic_dict)
 
-#output_rows = []
-#output_fields = []
-#with open('data.tsv', 'r') as f:
-#	with open('data_out.csv', 'wb') as g:
-#		r = csv.DictReader(f, delimiter='\t')
-#		w = csv.DictWriter(g, output_fields, quotechar='"')
-#		#f.seek(0)
-#		fieldnames = r.fieldnames
-#		w.writeheader()
-#		for row in r:
-#			w.writerow(formatRow(row, fieldnames))
-#f.close()
-#
-#if output_rows:
-#	output_fields = sorted(output_rows[0].keys())
-#	with open('data_out.csv', 'wb') as f:
-#		w = csv.DictWriter(f, output_fields, quotechar='"')
-#		for row in output_rows:
-#			w.writerow(row)
-#	f.close()
