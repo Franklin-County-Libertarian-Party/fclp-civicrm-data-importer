@@ -280,6 +280,8 @@ if( ! $filehandle) {
 	exit("File [".$argv[1]."] does not exist or can not be opened.");
 }
 
+ini_set('auto_detect_line_endings', true);
+
 $headers = fgetcsv($filehandle);
 
 $line_counter = 2;
