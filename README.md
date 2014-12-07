@@ -5,3 +5,9 @@ Imports data from ~~[Franklin County Board of Elections](https://vote.franklinco
 
 It seems the Secretary of State's data and Franklin County's are exactly the same. We're going to defer to simply using the SoS data as the authority
 so this can easily scale to the state level.
+
+
+To Do
+=====
+
+Refactor field names into JSON config file to be shared between scripts
