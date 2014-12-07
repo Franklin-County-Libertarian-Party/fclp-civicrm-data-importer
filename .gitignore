@@ -8,3 +8,4 @@
 *.orig
 *.pyc
 *.lnk
+devtmp/*
