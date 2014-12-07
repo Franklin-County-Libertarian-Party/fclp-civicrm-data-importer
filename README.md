@@ -30,3 +30,4 @@ Traceback (most recent call last):
     'County': titleCase(county_map[str(row['COUNTY_NUMBER']).strip()]),
 KeyError: 'None'
 ```
+* Fix name suffix issue. CiviCRM requires name suffixes be defined within the system, this can be done later. Perhaps an update to do them programmatically

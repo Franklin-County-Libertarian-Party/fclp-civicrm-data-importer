@@ -335,7 +335,11 @@ function add_record($record) {
     } elseif($dst_field_category == 'Voter Metadata') {
 	  if($value) array_push($voter_metadata, array('group' => 'Voter Metadata', 'field' => $field, 'value' => $value));
     } elseif($dst_field_category == 'base') {
-      $contact[$field_map_from_import[$field]] = $value;
+	  if($field == 'Name Suffix') {
+      	if(in_array($value, array('Jr.', 'JR', 'Sr.', 'SR', 'II', 'III', 'IV', 'V', 'VI'))) { // skip unrecognizable suffixes, this can be fixed later TODO
+			$contact[$field_map_from_import[$field]] = $value;
+		}
+	  }
     } else {
 		print("Skipping field: ".$field);
 	}
