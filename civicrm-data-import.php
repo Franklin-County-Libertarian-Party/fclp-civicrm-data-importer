@@ -281,6 +281,7 @@ if( ! $filehandle) {
 }
 
 ini_set('auto_detect_line_endings', true);
+error_reporting(E_ERROR);
 
 $headers = fgetcsv($filehandle);
 
@@ -325,7 +326,7 @@ function add_record($record) {
 	$contact['contact_type'] = 'Individual';
 	$contact['display_name'] = $record['First Name'] . " " . ($record['Middle Name'] ? substr($record['Middle Name'], 0, 1) . ". "  : '') . $record['Last Name'];
 	$record['Date Registered'] = date('YmdHis', strtotime($record['Date Registered']));
-	print "display_name: " . $contact['display_name'] . "\n";
+
   foreach($record as $field => $value) {
     $dst_field_category = $field_mapping[$field];
 
@@ -342,6 +343,8 @@ function add_record($record) {
       	if(in_array($value, array('Jr.', 'JR', 'Sr.', 'SR', 'II', 'III', 'IV', 'V', 'VI'))) { // skip unrecognizable suffixes, this can be fixed later TODO
 			$contact[$field_map_from_import[$field]] = $value;
 		}
+	  } else {
+		$contact[$field_map_from_import[$field]] = $value;
 	  }
     } else {
 		//print("Skipping field: ".$field);
