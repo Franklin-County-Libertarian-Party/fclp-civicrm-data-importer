@@ -288,10 +288,14 @@ $headers = fgetcsv($filehandle);
 $line_counter = 2;
 
 $record = null;
+$currTime = time();
+print "Started " . $currTime;
 while($record = transform_record(fgetcsv($filehandle), $headers, $line_counter)) {
 	add_record($record);
-	if(! $line_counter % 1000) {
-		print "At line " . $line_counter;
+	$newTime = time();
+	if($newTime - $currTime > 300) {
+		print ("\n\nRecord ".$line_counter."\n");
+		print_r($record);
 	}
 }
 
