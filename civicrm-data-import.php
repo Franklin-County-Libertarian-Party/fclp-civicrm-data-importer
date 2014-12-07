@@ -294,6 +294,7 @@ while($record = transform_record(fgetcsv($filehandle), $headers, $line_counter))
 	add_record($record);
 	$newTime = time();
 	if($newTime - $currTime > 300) {
+		$currTime = $newTime;
 		print ("\n\nRecord ".$line_counter."\n");
 		print_r($record);
 	}
