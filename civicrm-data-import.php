@@ -281,6 +281,7 @@ if( ! $filehandle) {
 }
 
 ini_set('auto_detect_line_endings', true);
+ini_set('memory_limit', '5G');
 error_reporting(E_ERROR);
 
 $headers = fgetcsv($filehandle);
@@ -289,13 +290,14 @@ $line_counter = 2;
 
 $record = null;
 $currTime = time();
+$startTime = $currTime;
 print "Started " . $currTime;
 while($record = transform_record(fgetcsv($filehandle), $headers, $line_counter)) {
 	add_record($record);
 	$newTime = time();
 	if($newTime - $currTime > 300) {
 		$currTime = $newTime;
-		print ("\n\nRecord ".$line_counter."\n");
+		print ("\n\nRecord ".$line_counter." ".($newTime - $startTime)." seconds elapsed\n");
 		print_r($record);
 	}
 	$line_counter++;
