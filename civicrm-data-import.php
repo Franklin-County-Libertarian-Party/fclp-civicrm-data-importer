@@ -298,7 +298,10 @@ while($record = transform_record(fgetcsv($filehandle), $headers, $line_counter))
 		print ("\n\nRecord ".$line_counter."\n");
 		print_r($record);
 	}
+	$line_counter++;
 }
+
+print "Imported ". $line_counter ." records.\n";
 
 function transform_record($record, $headers, $line_count) {
 	if( ! $record) {
