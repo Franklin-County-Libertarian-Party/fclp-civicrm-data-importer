@@ -289,6 +289,9 @@ $line_counter = 2;
 $record = null;
 while($record = transform_record(fgetcsv($filehandle), $headers, $line_counter)) {
 	add_record($record);
+	if(! $line_counter % 1000) {
+		print "At line " . $line_counter;
+	}
 }
 
 function transform_record($record, $headers, $line_count) {
@@ -341,7 +344,7 @@ function add_record($record) {
 		}
 	  }
     } else {
-		print("Skipping field: ".$field);
+		//print("Skipping field: ".$field);
 	}
     
   }
