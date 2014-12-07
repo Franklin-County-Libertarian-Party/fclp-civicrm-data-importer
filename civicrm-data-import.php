@@ -48,7 +48,7 @@ $field_map_from_import = array(
 	'May 2011 Primary Ballot Requested' => 'custom_28',
 	'May 2013 Primary Ballot Requested' => 'custom_33',
 	'May 2014 Primary Ballot Requested' => 'custom_34',
-	'Middle Initial' => 'middle_name',
+	'Middle Name' => 'middle_name',
 	'Name Suffix' => 'suffix_id',
 	'November 2000 General Ballot Requested' => 'custom_1',
 	'November 2001 General Ballot Requested' => 'custom_3',
@@ -74,8 +74,10 @@ $field_map_from_import = array(
 	'State House District' => 'custom_44',
 	'State Senate District' => 'custom_45',
 	'Township' => 'custom_46',
-	'Voter Address' => 'street_address',
-	'Voter ID' => 'custom_47',
+	'Voter Street Address' => 'street_address',
+	'Voter Mailing Address' => 'supplemental_address_1',
+	'State Voter ID' => 'custom_47',
+	'County Voter ID' => 'custom_51',
 	'Voter Status' => 'custom_48',
 	'Year Born' => 'custom_49',
 	'Zip Code' => 'postal_code',
@@ -87,7 +89,7 @@ $field_mapping = array(
 	'City or Village Code' => 'base',
 	'First Name' => 'base',
 	'Last Name' => 'base',
-	'Middle Initial' => 'base',
+	'Middle Name' => 'base',
 	'Name Suffix' => 'base',
 	'State' => 'base',
 	'Voter Address' => 'base',
@@ -142,7 +144,8 @@ $field_mapping = array(
 	'State House District' => 'Voter Metadata',
 	'State Senate District' => 'Voter Metadata',
 	'Township' => 'Voter Metadata',
-	'Voter ID' => 'Voter Metadata',
+	'State Voter ID' => 'Voter Metadata',
+	'County Voter ID' => 'Voter Metadata',
 	'Voter Status' => 'Voter Metadata',
 	'Birth Year' => 'Voter Metadata',
 	'Voter Registration Date' => 'Voter Metadata',
@@ -235,15 +238,11 @@ function add_record($record) {
 
 //updates the field, returns number of fields updated  
 function _update_custom_field($uid,$group_name,$field_name,$value, $overwriteblank=FALSE){
-  //echo "$uid G:$group_name F:$field_name V:$value \n";
- 
   //Don't overwrite existing data if our data value is empty/blank
   //We consider anything that is just whitespace to be "blank"
   if ( ( !isset($value) || strlen(trim($value))==0 ) && !$overwriteblank) return 0;
-	$custom_create_params = array (version => '3','sequential' =>'1', 'entity_id' =>$uid, "custom_" .$group_name . ":" . $field_name => $value);
-    $results=civicrm_api("CustomValue","create", $custom_create_params);
-    //'location_political_geo_information:state  
-    //print_r($results);
+    field_var = field_map_from_import[$field_name]
+	$results=civicrm_api3("custom_value","create", array(field_var => $value, 'entity_id' => $uid));
   return 1;
    
 }
