@@ -291,19 +291,47 @@ $line_counter = 2;
 $record = null;
 $currTime = time();
 $startTime = $currTime;
-print "Started " . $currTime;
+print "Started ". $currTime ." File: ".$argv[1]."\n";
 while($record = transform_record(fgetcsv($filehandle), $headers, $line_counter)) {
-	add_record($record);
-	$newTime = time();
-	if($newTime - $currTime > 300) {
-		$currTime = $newTime;
-		print ("\n\nRecord ".$line_counter." ".($newTime - $startTime)." seconds elapsed\n");
-		print_r($record);
+	// try and retrieve the record
+	// If 1 found, skip it
+	// If 2 found, remove all and re-import
+	// search again to ensure it was entered
+	$search_params = array(
+		"custom_47" => $record['State Voter ID']
+	);
+	$num = civicrm_api3('contact', 'getCount', $search_params);
+	
+	$added = 0;
+	$removed = 0;
+	#print("Found ".$num." records.\n");
+	if($num > 1) {
+		// Remove any accidental double imports
+		$contacts = civicrm_api3('contact', 'get', $search_params)['values'];
+		$contact_ids = array_keys($contacts);
+		#print("IDs: ".print_r($contact_ids, true));
+		$nc = count($contact_ids);
+		while($nc > 1) {
+			$id = $contact_ids[$nc - 1];
+			$p = array("id" => $id);
+			civicrm_api3('contact', 'delete', $p);
+			$removed++;
+			$nc--;
+		}
+	} elseif($num == 0) {
+		try {
+			add_record($record);
+		} catch(Exception $e) {
+			die("Exception caught on line ".$line_counter." of file ".$argv[1]);
+		}
+		$added++;
 	}
+
+	$newTime = time();
 	$line_counter++;
 }
 
-print "Imported ". $line_counter ." records.\n";
+print("Added ".$added." records, deleted ".$removed."\n");
 
 function transform_record($record, $headers, $line_count) {
 	if( ! $record) {
